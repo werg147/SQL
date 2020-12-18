@@ -80,9 +80,13 @@ select manager_id,
        min(salary) 최소급여,
        max(salary) 최대급여
 from employees
-group by manager_id
+group by manager_id, hire_date
 having avg(salary) >= 5000
+and hire_date > '05/01/01'
 order by avg(salary) desc;
+
+select *
+from employees;
 
 /*문제10
 아래회사는 보너스 지급을 위해 직원을 입사일 기준으로 나눌려고 합니다. 
