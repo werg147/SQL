@@ -61,7 +61,7 @@ select department_id "부서",
 from employees
 group by department_id
 having avg(salary) - min(salary) < 2000
-order by avg(salary) - min(salary) desc;
+order by "평균임금-최저임금" desc; --avg(salary) - min(salary)
 
 /*문제8.
 업무(JOBS)별로 최고임금과 최저임금의 차이를 출력해보세요.
