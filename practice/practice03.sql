@@ -145,11 +145,11 @@ and co.region_id = re.region_id;
 select em.employee_id as 사번,
        em.first_name as 이름,
        de.department_name as 부서명,
-       mana.first_name as 매니저이름
-from employees em, employees mana, departments de
-where em.manager_id = mana.employee_id
-and em.department_id = de.department_id;
---부서가 없는 직원 포함
+       ma.first_name as 매니저이름
+from employees em left outer join departments de
+                  on em.department_id = de.department_id,  --부서가 없는 직원 포함하기위해 department_id는 left join
+     employees ma  -- 같은 테이블 자신끼리 join
+where em.manager_id = ma.employee_id;
 
 
 
