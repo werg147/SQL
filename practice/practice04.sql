@@ -143,6 +143,45 @@ and em.salary > emd.salary;
 
 /*문제8.
 직원 입사일이 11번째에서 15번째의 직원의 사번, 이름, 급여, 입사일을 입사일 순서로 출력하세요*/
+select employee_id,
+       first_name,
+       salary,
+       hire_date
+from employees
+order by hire_date asc; --입사일 순서로 정렬
+
+select rownum,
+       o.employee_id,
+       o.first_name,
+       o.salary,
+       o.hire_date
+from (select employee_id,
+             first_name,
+             salary,
+             hire_date
+      from employees
+      order by hire_date asc) o; -- 입사일 순서로 정렬/일련번호 생성rownum
+      
+select ro.rn,
+       ro.employee_id,
+       ro.first_name,
+       ro.salary,
+       ro.hire_date
+from (select rownum rn,
+             o.employee_id,
+             o.first_name,
+             o.salary,
+             o.hire_date
+      from (select employee_id,
+             first_name,
+             salary,
+             hire_date
+            from employees
+            order by hire_date asc) o
+      ) ro
+where ro.rn >= 11
+and ro.rn <= 15;
+
 
 
 
