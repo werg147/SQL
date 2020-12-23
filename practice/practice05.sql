@@ -188,17 +188,90 @@ from (select rownum rn,
 where ro.rn >= 1
 and ro.rn <= 2;
 
+--max(hire_date)
+select em.first_name || ' ' || em.last_name,
+       em.salary,
+       de.department_name,
+       em.hire_date
+from employees em, departments de
+where em.department_id = de.department_id
+and em.hire_date = (select max(hire_date) --max(hire_date)테이블-컬럼 필요
+                    from employees)
+order by hire_date desc;
+
 
 /*문제7.
 평균연봉(salary)이 가장 높은 부서 직원들의 직원번호(employee_id), 이름(firt_name), 성(last_name)과
 업무(job_title), 연봉(salary)을 조회하시오.*/
-select avg(salary)
+select max(avg(salary))
 from employees
-group by department_id --부서별 평균연봉
+group by department_id; --평균연봉이 가장 높은 부서의 연봉 19333.3333...
+
+select avg(salary),
+       department_id
+from employees
+group by department_id; --부서별 평균연봉
+
+select asal.avs,
+       asal.department_id
+from (select avg(salary) avs,
+             department_id
+      from employees
+      group by department_id) asal, (select max(avg(salary))mas
+                                      from employees
+                                      group by department_id) masal
+where asal.avs = masal.mas; --부서별 평균연봉이 가장높은(평균최대연봉인) 부서
+
+select em.employee_id "사번",
+       em.first_name "이름",
+       em.last_name "성",
+       em.salary "급여",
+       ss.avs,
+       jo.job_title
+from employees em, (select asal.avs,
+                           asal.department_id
+                    from (select avg(salary) avs,
+                          department_id
+                    from employees
+                    group by department_id) asal, (select max(avg(salary))mas
+                                                   from employees
+                                                   group by department_id) masal
+                                                   where asal.avs = masal.mas) ss
+                    , jobs jo
+where em.department_id = ss.department_id
+and em.job_id = jo.job_id;
+                                                   
 
 
 /*문제8.
 평균 급여(salary)가 가장 높은 부서는?*/
+select avg(salary)
+from employees
+group by department_id; --부서별 평균급여
+
+select max(avg(salary))
+from employees
+group by department_id; --부서 최대평균급여
+
+select avgs.av
+from (select avg(salary) av
+      from employees
+      group by department_id) avgs, (select max(avg(salary)) ma
+                                     from employees
+                                     group by department_id) maxs
+where avgs.av = maxs.ma; --평균급여가 가장 높은 부서의 급여
+
+select de.department_name
+from departments de, (select avgs.av,
+                             avgs.department_id
+                      from (select avg(salary) av,
+                                   department_id
+                            from employees
+                            group by department_id) avgs, (select max(avg(salary)) ma
+                                                           from employees
+                                                           group by department_id) maxs
+                                                           where avgs.av = maxs.ma) ss
+where de.department_id = ss.department_id;
 
 
 /*문제9.
