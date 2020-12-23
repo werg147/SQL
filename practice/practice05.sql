@@ -153,7 +153,7 @@ select em.first_name || ' ' || em.last_name,
        em.hire_date
 from employees em, departments de
 where em.department_id = de.department_id
-order by hire_date desc;  --직원 이름,연봉,부서이름 리스트 입사늦은순서로 정렬 (rownum을 이용해 1번을 뽑을 계획)
+order by hire_date desc;  --직원 이름,연봉,부서이름 리스트 입사늦은순서로 정렬 (rownum을 이용해 1,2번을 뽑을 계획)
 
 select rownum rn,
        o.name,
