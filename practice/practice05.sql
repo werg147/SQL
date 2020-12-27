@@ -253,13 +253,15 @@ select max(avg(salary))
 from employees
 group by department_id; --부서 최대평균급여
 
-select avgs.av
-from (select avg(salary) av
+select avgs.av,
+       avgs.department_id
+from (select avg(salary) av,
+             department_id
       from employees
       group by department_id) avgs, (select max(avg(salary)) ma
                                      from employees
                                      group by department_id) maxs
-where avgs.av = maxs.ma; --평균급여가 가장 높은 부서의 급여
+where avgs.av = maxs.ma; --평균급여가 가장 높은 부서의 급여와 부서아이디
 
 select de.department_name
 from departments de, (select avgs.av,
@@ -273,14 +275,107 @@ from departments de, (select avgs.av,
                                                            where avgs.av = maxs.ma) ss
 where de.department_id = ss.department_id;
 
+--rownum
+select avg(salary) avgs,
+       department_id
+from employees
+group by department_id
+order by avg(salary) desc; --부서별 평균연봉과 부서아이디
+
+select rownum,
+       ema.avgs,
+       ema.department_id
+from (select avg(salary) avgs,
+             department_id
+      from employees
+      group by department_id
+      order by avg(salary) desc) ema; --부서별 평균연봉과 부서아이디 + 내림차순 rownum
+      
+select de.department_name
+from (select rownum ro,
+             ema.avgs,
+             ema.department_id
+      from (select avg(salary) avgs,
+                   department_id
+            from employees
+            group by department_id
+            order by avg(salary) desc) ema
+      ) rema , departments de
+where de.department_id = rema.department_id
+and rema.ro = 1; --ema와 department를 join해서 rownum=1 출력
+
 
 /*문제9.
 평균 급여(salary)가 가장 높은 지역은?*/
+--empoloyees - department - locations - countries - regions
+--지역별 평균 급여
+select re.region_name,
+       avg(em.salary) ems 
+from employees em, departments de, locations lo, countries co, regions re
+where em.department_id = de.department_id
+and de.location_id = lo.location_id
+and lo.country_id = co.country_id
+and co.region_id = re.region_id
+group by re.region_name
+order by avg(em.salary) desc; --Europe 8916, Americas 5191
+
+select rownum r,
+       re_avgs.region_name
+from (select re.region_name,
+             avg(em.salary) ems 
+      from employees em, departments de, locations lo, countries co, regions re
+      where em.department_id = de.department_id
+      and de.location_id = lo.location_id
+      and lo.country_id = co.country_id
+      and co.region_id = re.region_id
+      group by re.region_name
+      order by avg(em.salary) desc) re_avgs;
+      
+select ro.region_name
+from (select rownum r,
+             re_avgs.region_name
+      from (select re.region_name,
+                   avg(em.salary) ems 
+            from employees em, departments de, locations lo, countries co, regions re
+            where em.department_id = de.department_id
+            and de.location_id = lo.location_id
+            and lo.country_id = co.country_id
+            and co.region_id = re.region_id
+           group by re.region_name
+           order by avg(em.salary) desc) re_avgs
+      ) ro
+where ro.r = 1;
 
 
 /*문제10.
 평균 급여(salary)가 가장 높은 업무는?*/
+--업무별 평균급여
+select avg(salary) avgs,
+       job_id
+from employees
+group by job_id
+order by avgs desc; --job_id : AD_PRES
 
-
+select rownum r,
+       o.avgs,
+       o.job_id
+from (select avg(salary) avgs,
+             job_id
+      from employees
+      group by job_id
+      order by avgs desc) o;
+      
+select jo.job_title
+from (select rownum r,
+             o.avgs,
+             o.job_id
+      from (select avg(salary) avgs,
+             job_id
+            from employees
+            group by job_id
+            order by avgs desc) o) ro, jobs jo
+where ro.job_id = jo.job_id
+and ro.r = 1;
+ 
 
 
